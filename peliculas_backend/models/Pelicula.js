@@ -10,4 +10,5 @@ const peliculaSchema = new mongoose.Schema({
   trailer: { type: String, default: "https://www.youtube.com/watch?v=jEm8FKcVLV4" }, 
 });
 
-
+const Pelicula = mongoose.model("Pelicula", peliculaSchema);
+export default Pelicula;
