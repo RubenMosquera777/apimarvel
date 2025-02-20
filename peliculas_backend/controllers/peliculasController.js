@@ -64,6 +64,53 @@ export const llenarPeliculasDesdeMarvel = async () => {
   } catch (error) {
     console.error("Error al obtener y guardar los datos de Marvel:", error);
   }
-  
+
 };  
 
+
+
+export const obtenerPeliculas = async (req, res) => {
+  try {
+    const peliculas = await Pelicula.find();
+    res.json(peliculas);
+  } catch (error) {
+    console.error("Error al obtener las películas:", error);
+    res.status(500).json({ error: "Error al obtener las películas." });
+  }
+};
+
+export const agregarPelicula = async (req, res) => {
+  try {
+      console.log("Datos recibidos en req.body:", req.body);
+      console.log("Archivo recibido en req.file:", req.file);
+
+      const { titulo, descripcion, formato, creador, fecha, trailer } = req.body;
+
+      if (!req.file) {
+          console.error("Error: No se recibió una imagen.");
+          return res.status(400).json({ error: "La imagen es obligatoria" });
+      }
+
+      if (!titulo || !descripcion || !formato || !creador || !fecha) {
+          console.error("Error: Faltan datos obligatorios.");
+          return res.status(400).json({ error: "Todos los campos son obligatorios" });
+      }
+
+      const nuevaPelicula = new Pelicula({
+          titulo,
+          descripcion,
+          formato,
+          creador,
+          fecha,
+          imagen: `/img/${req.file.filename}`,
+          trailer: trailer || undefined 
+      });
+
+      await nuevaPelicula.save();
+      console.log("Película guardada con éxito:", nuevaPelicula);
+      res.status(201).json(nuevaPelicula);
+  } catch (error) {
+      console.error("Error al agregar la película:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
