@@ -154,3 +154,41 @@ export const actualizarPelicula = async (req, res) => {
       res.status(500).json({ error: "Error al actualizar la película" });
   }
 };
+
+
+
+export const obtenerPeliculaPorId = async (req, res) => {
+  try {
+      const pelicula = await Pelicula.findById(req.params.id);
+      if (!pelicula) {
+          return res.status(404).json({ error: "Pelicula no encontrada" });
+      }
+      res.json(pelicula);
+  } catch (error) {
+      console.error("Error al obtener la película:", error);
+      res.status(500).json({ error: "Error al obtener la película." });
+  }
+};
+
+
+// Eliminar una película por ID
+export const eliminarPelicula = async (req, res) => {
+  try {
+    const pelicula = await Pelicula.findById(req.params.id);
+    if (!pelicula) {
+      return res.status(404).json({ error: "Película no encontrada" });
+    }
+
+    // Eliminar la imagen asociada
+    const imagePath = path.join(__dirname, "../", pelicula.imagen);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+
+    await Pelicula.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Pelicula eliminada correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar la pelicula:", error);
+    res.status(500).json({ error: "Error al eliminar la película." });
+  }
+};
