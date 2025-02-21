@@ -114,3 +114,43 @@ export const agregarPelicula = async (req, res) => {
       res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+
+
+
+export const actualizarPelicula = async (req, res) => {
+  try {
+      const id = req.params.id;
+      const pelicula = await Pelicula.findById(id);
+
+      if (!pelicula) {
+          return res.status(404).json({ error: "Película no encontrada" });
+      }
+
+      // Si se sube una nueva imagen, reemplazar la anterior
+      if (req.file) {
+          const nuevaRutaImagen = `/img/${req.file.filename}`;
+          const imagenAnterior = pelicula.imagen ? path.join(__dirname, "../", pelicula.imagen) : null;
+
+          // Borrar la imagen anterior si exisia
+          if (imagenAnterior && fs.existsSync(imagenAnterior)) {
+              fs.unlinkSync(imagenAnterior);
+          }
+
+          pelicula.imagen = nuevaRutaImagen; // Asignar la nueva imagen
+      }
+
+      // Actualizar otros campos si estan en el body
+      if (req.body.titulo) pelicula.titulo = req.body.titulo;
+      if (req.body.descripcion) pelicula.descripcion = req.body.descripcion;
+      if (req.body.formato) pelicula.formato = req.body.formato;
+      if (req.body.creador) pelicula.creador = req.body.creador;
+      if (req.body.fecha) pelicula.fecha = req.body.fecha;
+
+      await pelicula.save();
+      res.status(200).json({ mensaje: "Pelicula actualizada correctamente", pelicula });
+  } catch (error) {
+      console.error("Error al actualizar la pelicula:", error);
+      res.status(500).json({ error: "Error al actualizar la película" });
+  }
+};
