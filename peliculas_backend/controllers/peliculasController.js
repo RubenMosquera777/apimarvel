@@ -33,6 +33,9 @@ const descargarImagen = async (url, nombreArchivo) => {
   }
 };
 
+
+
+
 // Llenar la base de datos con películas desde Marvel y descargar imágenes
 export const llenarPeliculasDesdeMarvel = async () => {
   
@@ -66,6 +69,8 @@ export const llenarPeliculasDesdeMarvel = async () => {
   }
 
 };  
+
+
 
 
 
